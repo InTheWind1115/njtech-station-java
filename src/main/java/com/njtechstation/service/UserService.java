@@ -13,4 +13,6 @@ public interface UserService {
     int insertEmailByphone(String eamil, String phone);
 
     String queryMailByPhone(String phone);
+
+    User queryUserByPhone(String phone);
 }

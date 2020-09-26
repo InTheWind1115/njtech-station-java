@@ -38,4 +38,9 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectMailByPhone(phone);
     }
 
+    @Override
+    public User queryUserByPhone(String phone) {
+        return userMapper.selectUserByPhone(phone);
+    }
+
 }

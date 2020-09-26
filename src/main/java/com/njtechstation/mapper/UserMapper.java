@@ -22,4 +22,6 @@ public interface UserMapper {
     int updateEmailByPhone(String email, String phone);
 
     String selectMailByPhone(String phone);
+
+    User selectUserByPhone(String phone);
 }

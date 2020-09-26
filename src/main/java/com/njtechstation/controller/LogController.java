@@ -3,6 +3,7 @@ package com.njtechstation.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.njtechstation.aliyun.SendSms;
+import com.njtechstation.domain.InfoReturn;
 import com.njtechstation.domain.Message;
 import com.njtechstation.domain.User;
 import com.njtechstation.mapper.UserMapper;
@@ -32,25 +33,30 @@ public class LogController {
 
     @PostMapping(value = "/signin")
     @ResponseBody
-    public String signIn(HttpServletRequest request, String phone, String userPwd) {
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@");
-        System.out.println(phone + userPwd);
+    public String signIn(HttpServletRequest request, String phone, String userPwd) throws JsonProcessingException {
+        InfoReturn infoReturn = new InfoReturn();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonReturn;
         if (phone != null && userPwd != null) {
-            HttpSession httpSession = request.getSession();
-            System.out.println("phone:" + phone);
-            System.out.println("userPwd:" + userPwd);
-            System.out.println("登录时候的httpsession" + httpSession);
-            String password = userService.queryPassword(phone);
-            String email = userService.queryMailByPhone(phone);
-            if (email != null)
-                httpSession.setAttribute("email", email);
-            if (userPwd.equals(password)) {
-                httpSession.setAttribute("phone", phone);
-                System.out.println("httpsession中的phone" + httpSession.getAttribute("phone"));
-                return "true";
+            User user = userService.queryUserByPhone(phone);
+            if (user != null && userPwd.equals(user.getUserPwd())) {
+                HttpSession httpSession = request.getSession();
+                String userEmail = user.getEmail();
+                String userPhone = user.getPhone();
+                String userName = user.getUserName();
+                httpSession.setAttribute("email", userEmail);
+                httpSession.setAttribute("phone", userPhone);
+                infoReturn.setEmail(userEmail);
+                infoReturn.setPhone(userPhone);
+                infoReturn.setUserName(userName);
+                infoReturn.setFlag(true);
+                jsonReturn = objectMapper.writeValueAsString(infoReturn);
+                return jsonReturn;
             }
         }
-        return "false";
+        infoReturn.setFlag(false);
+        jsonReturn = objectMapper.writeValueAsString(infoReturn);
+        return jsonReturn;
     }
 
 
@@ -64,12 +70,15 @@ public class LogController {
      * @return 成功注册，返回1 验证码失效返回0 验证码错误返回-1 和注册码时发送的手机号不一样返回-2
      */
 
-    @RequestMapping("/signup")
+    @GetMapping("/signup")
     @ResponseBody
     public int signUP(HttpServletRequest request, String username, String userPwd, String phone, String code) {
+        System.out.println(username);
+        System.out.println(userPwd);
+        System.out.println(phone);
+        System.out.println(code);
         // 查看验证码是否以过期
         HttpSession httpSession = request.getSession();
-        System.out.println("注册时候的httpsession" + httpSession);
         String check = (String) httpSession.getAttribute("checkCode");
         String phoneNum = (String) httpSession.getAttribute("phone");
         if (phoneNum != null && !phoneNum.equals(phone))
@@ -92,7 +101,7 @@ public class LogController {
      * @param phone
      * @return 1：成功 0：此用户已存在
      */
-    @RequestMapping("/phonecode")
+    @PostMapping("/phonecode")
     @ResponseBody
     public int getPhoneCode(HttpServletRequest request, String phone) {
         String isExist = userService.queryPassword(phone);
@@ -101,12 +110,8 @@ public class LogController {
         String code = this.randomCode();
         sendSms.sendMessage(phone, code);
         HttpSession httpSession = request.getSession();
-        System.out.println("获取验证码时候的httpsession" + httpSession);
         httpSession.setAttribute("checkCode", code);
         httpSession.setAttribute("phone", phone);
-        String check = (String) httpSession.getAttribute("checkCode");
-        String phoneNum = (String) httpSession.getAttribute("phone");
-
         // 实现5分钟的定时器，验证码5分钟后失效
         final Timer timer=new Timer();
         timer.schedule(new TimerTask() {
@@ -191,6 +196,7 @@ public class LogController {
         Message message = new Message();
         ObjectMapper objectMapper = new ObjectMapper();
         HttpSession httpSession = request.getSession();
+        System.out.println("邮箱验证时候的session" + httpSession);
 
         String checkCode = (String) httpSession.getAttribute("emailCode");
         if (checkCode == null) {
