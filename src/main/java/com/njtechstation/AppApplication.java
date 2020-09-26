@@ -13,6 +13,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 public class AppApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
+        System.out.println("sdfsdfsdf");
         SpringApplication.run(AppApplication.class, args);
     }
 

@@ -33,6 +33,7 @@ public class LogController {
     @PostMapping(value = "/signin")
     @ResponseBody
     public String signIn(HttpServletRequest request, String phone, String userPwd) {
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@");
         System.out.println(phone + userPwd);
         if (phone != null && userPwd != null) {
             HttpSession httpSession = request.getSession();
@@ -129,12 +130,13 @@ public class LogController {
     }
 
 
-    @RequestMapping(value = "/sendmailcode")
+    @PostMapping(value = "/sendmailcode")
     @ResponseBody
     public String sendMailCode(HttpServletRequest request, String email) throws JsonProcessingException, UnsupportedEncodingException, MessagingException {
 
         Message message = new Message();
         ObjectMapper objectMapper = new ObjectMapper();
+        System.out.println("@@@@@@#@#@#@#@#@#");
         System.out.println("!!!!!!!!!" + email);
 
         if (email == null) {
