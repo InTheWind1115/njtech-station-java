@@ -14,7 +14,7 @@ import java.util.Properties;
 public class EmailServiceImpl {
 
     private final String myEmail = "1528623056@qq.com"; //发送人的邮箱
-    private final String myEmailPwd = "anztbqwhviplhchi"; //发送人的授权码
+    private final String myEmailPwd = ""; //发送人的授权码
     private String  receieveMail = null;
     private String info = null;
 
