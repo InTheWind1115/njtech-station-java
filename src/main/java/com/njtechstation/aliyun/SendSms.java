@@ -23,7 +23,7 @@ public class SendSms {
 
     public void sendMessage(String phone, String code) {
         String codeJson = "{" + "code: " + "\"" + code + "\"}";
-        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "LTAI4GKFbrc3nAu7hoHMv1JX", "HROf3CVByBw1zXe2JiWZUjKARTOGvo");
+        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "", "");
         IAcsClient client = new DefaultAcsClient(profile);
 
         CommonRequest request = new CommonRequest();
